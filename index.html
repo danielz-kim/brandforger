@@ -33,6 +33,20 @@
         background: url('https://grainy-gradients.vercel.app/noise.svg');
       }
 
+      .scanlines {
+        position: fixed;
+        inset: 0;
+        background: linear-gradient(
+          to bottom,
+          rgba(18, 16, 16, 0) 50%,
+          rgba(0, 0, 0, 0.1) 50%
+        );
+        background-size: 100% 4px;
+        z-index: 9998;
+        pointer-events: none;
+        opacity: 0.5;
+      }
+
       @media print {
         body { background-color: white !important; color: black !important; }
         .no-print { display: none !important; }
@@ -70,12 +84,17 @@
         position: fixed;
         inset: 0;
         background: #0a0a0c;
-        z-index: 99999;
+        z-index: 100000;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        animation: fadeOut 1s ease 1.5s forwards;
+        transition: opacity 1s ease, visibility 1s ease;
+      }
+
+      .preloader.hidden {
+        opacity: 0;
+        visibility: hidden;
       }
 
       .preloader-line {
@@ -90,21 +109,27 @@
         position: absolute;
         height: 100%;
         background: white;
-        animation: lineReveal 1.2s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+        width: 0%;
+        animation: progressAnim 1.5s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+      }
+
+      @keyframes progressAnim {
+        0% { width: 0%; left: 0; }
+        50% { width: 100%; left: 0; }
+        100% { width: 100%; left: 0; }
       }
 
       .preloader-text {
         margin-top: 24px;
         font-size: 10px;
         text-transform: uppercase;
-        letter-spacing: 0.6em;
+        letter-spacing: 0.8em;
         font-weight: 800;
         color: white;
         opacity: 0;
         animation: cinematicReveal 1s ease 0.2s forwards;
       }
 
-      /* Custom animations */
       @keyframes float {
         0% { transform: translateY(0px); }
         50% { transform: translateY(-10px); }
@@ -126,13 +151,28 @@
 </script>
 </head>
 <body class="bg-[#0a0a0c]">
-    <div class="preloader no-print">
+    <div class="preloader no-print" id="preloader">
       <div class="preloader-line">
         <div class="preloader-progress"></div>
       </div>
       <div class="preloader-text">Architecting Identity</div>
     </div>
+    
     <div class="noise"></div>
+    <div class="scanlines"></div>
     <div id="root"></div>
+
+    <script>
+      // Fallback to ensure preloader always disappears
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const preloader = document.getElementById('preloader');
+          if (preloader) {
+            preloader.classList.add('hidden');
+          }
+        }, 2000);
+      });
+    </script>
+    <script type="module" src="./index.tsx"></script>
 </body>
 </html>

@@ -2,9 +2,10 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { BrandIdentity, BrandFormInputs } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
-
 export const generateBrandIdentity = async (inputs: BrandFormInputs): Promise<BrandIdentity> => {
+  // Instantiate inside the function to avoid top-level ReferenceError on process.env
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+
   const prompt = `Act as a world-class brand strategist and creative director from a top-tier design agency (like Pentagram, Sagmeister & Walsh, or Wolff Olins).
   Create a comprehensive, professional brand identity for:
   Name: ${inputs.name || 'A new innovative project'}
@@ -75,6 +76,7 @@ export const generateBrandIdentity = async (inputs: BrandFormInputs): Promise<Br
 };
 
 export const generateBrandLogo = async (identity: BrandIdentity): Promise<string> => {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
   const firstLetter = identity.companyName.trim().charAt(0).toUpperCase();
   
   const logoPrompt = `Act as a senior graphic designer specializing in high-end minimalist corporate identity. 

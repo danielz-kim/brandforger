@@ -25,12 +25,17 @@ const TypewriterText: React.FC<{ text: string; delay?: number; className?: strin
       } else {
         clearInterval(interval);
       }
-    }, 60);
+    }, 40);
 
     return () => clearInterval(interval);
   }, [text, isStarted]);
 
-  return <span className={className}>{displayedText}</span>;
+  return (
+    <span className={`${className} transition-opacity duration-300 ${isStarted ? 'opacity-100' : 'opacity-0'}`}>
+      {displayedText}
+      <span className="inline-block w-[2px] h-[0.8em] bg-indigo-500 ml-1 animate-pulse"></span>
+    </span>
+  );
 };
 
 const App: React.FC = () => {
@@ -65,7 +70,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen selection:bg-white selection:text-black">
+    <div className="min-h-screen selection:bg-white selection:text-black bg-[#0a0a0c]">
       {/* Editorial Navbar */}
       <nav className="fixed top-0 left-0 w-full z-[100] px-8 py-8 no-print animate-reveal-1">
          <div className="max-w-7xl mx-auto flex justify-between items-center">
@@ -102,12 +107,12 @@ const App: React.FC = () => {
                      <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-400">Core Engine Online</span>
                   </div>
                   
-                  <h1 className="text-7xl md:text-[100px] font-black text-white leading-[0.85] tracking-tighter uppercase brand-serif italic">
-                    <TypewriterText text="Identity is" delay={2000} className="block" />
+                  <h1 className="text-6xl md:text-[90px] lg:text-[100px] font-black text-white leading-[0.85] tracking-tighter uppercase brand-serif italic min-h-[1.8em]">
+                    <TypewriterText text="Identity is" delay={2100} className="block" />
                     <TypewriterText text="Architected." delay={3000} className="text-slate-800 block" />
                   </h1>
                   
-                  <p className="text-2xl text-slate-400 font-light max-w-xl leading-relaxed animate-reveal-3">
+                  <p className="text-xl md:text-2xl text-slate-400 font-light max-w-xl leading-relaxed animate-reveal-3">
                     Transcending generic automation. Synthesis of industry intelligence and bespoke visual craft for the next era of ventures.
                   </p>
 
@@ -186,7 +191,7 @@ const App: React.FC = () => {
       <footer className="mt-32 border-t border-white/5 py-12 px-8 no-print">
          <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
             <div className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.4em]">
-              &copy; 2024 BrandForge Studio / Identity Architect v3.0
+              &copy; 2024 BrandForge Studio / Identity Architect v3.1
             </div>
             <div className="flex gap-8">
                <a href="#" className="text-[10px] font-bold text-slate-500 hover:text-white uppercase tracking-widest">Privacy</a>
