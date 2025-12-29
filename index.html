@@ -50,36 +50,11 @@
       @media print {
         body { background-color: white !important; color: black !important; }
         .no-print { display: none !important; }
-        .print-only { display: block !important; }
         .brand-guide-container { padding: 0 !important; margin: 0 !important; box-shadow: none !important; }
-        .bg-white { background-color: white !important; border: 1px solid #e2e8f0 !important; }
-        .bg-slate-900, .bg-slate-950 { background-color: #ffffff !important; color: black !important; border: 1px solid #eee !important; }
-        .text-white, .text-slate-100 { color: #000 !important; }
-        .text-slate-400, .text-slate-500 { color: #666 !important; }
-        .shadow-2xl, .shadow-xl { box-shadow: none !important; }
-        .rounded-3xl, .rounded-2xl { border-radius: 4px !important; }
+        .bg-white { background-color: white !important; }
       }
 
-      /* Entrance Animations */
-      @keyframes cinematicReveal {
-        0% { transform: translateY(30px); opacity: 0; filter: blur(10px); }
-        100% { transform: translateY(0); opacity: 1; filter: blur(0); }
-      }
-
-      @keyframes lineReveal {
-        from { width: 0; }
-        to { width: 100%; }
-      }
-
-      @keyframes fadeOut {
-        to { opacity: 0; visibility: hidden; }
-      }
-
-      .animate-reveal-1 { animation: cinematicReveal 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
-      .animate-reveal-2 { animation: cinematicReveal 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards; opacity: 0; }
-      .animate-reveal-3 { animation: cinematicReveal 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards; opacity: 0; }
-      .animate-reveal-4 { animation: cinematicReveal 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.9s forwards; opacity: 0; }
-      
+      /* Preloader */
       .preloader {
         position: fixed;
         inset: 0;
@@ -89,7 +64,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        transition: opacity 1s ease, visibility 1s ease;
+        transition: opacity 0.8s ease, visibility 0.8s ease;
       }
 
       .preloader.hidden {
@@ -110,13 +85,12 @@
         height: 100%;
         background: white;
         width: 0%;
-        animation: progressAnim 1.5s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+        animation: progressAnim 2s cubic-bezier(0.65, 0, 0.35, 1) forwards;
       }
 
       @keyframes progressAnim {
-        0% { width: 0%; left: 0; }
-        50% { width: 100%; left: 0; }
-        100% { width: 100%; left: 0; }
+        0% { width: 0%; }
+        100% { width: 100%; }
       }
 
       .preloader-text {
@@ -127,15 +101,25 @@
         font-weight: 800;
         color: white;
         opacity: 0;
-        animation: cinematicReveal 1s ease 0.2s forwards;
+        animation: fadeIn 1s ease 0.5s forwards;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
       }
 
       @keyframes float {
-        0% { transform: translateY(0px); }
+        0%, 100% { transform: translateY(0px); }
         50% { transform: translateY(-10px); }
-        100% { transform: translateY(0px); }
       }
       .animate-float { animation: float 6s ease-in-out infinite; }
+      
+      .glass-card {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
     </style>
 <script type="importmap">
 {
@@ -163,16 +147,13 @@
     <div id="root"></div>
 
     <script>
-      // Fallback to ensure preloader always disappears
+      // Force hide preloader if React takes too long or fails
       window.addEventListener('load', () => {
         setTimeout(() => {
           const preloader = document.getElementById('preloader');
-          if (preloader) {
-            preloader.classList.add('hidden');
-          }
-        }, 2000);
+          if (preloader) preloader.classList.add('hidden');
+        }, 2500);
       });
     </script>
-    <script type="module" src="./index.tsx"></script>
 </body>
 </html>

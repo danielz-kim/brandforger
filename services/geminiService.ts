@@ -2,9 +2,15 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { BrandIdentity, BrandFormInputs } from "../types";
 
+// Removed redundant getSafeApiKey helper. Guidelines state process.env.API_KEY is available and should be used directly.
+
+/**
+ * Generates a comprehensive brand identity using Gemini.
+ * Uses gemini-3-pro-preview for complex reasoning and strategic output.
+ */
 export const generateBrandIdentity = async (inputs: BrandFormInputs): Promise<BrandIdentity> => {
-  // Instantiate inside the function to avoid top-level ReferenceError on process.env
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+  // Initialize GoogleGenAI right before making the API call as per guidelines.
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   const prompt = `Act as a world-class brand strategist and creative director from a top-tier design agency (like Pentagram, Sagmeister & Walsh, or Wolff Olins).
   Create a comprehensive, professional brand identity for:
@@ -72,11 +78,17 @@ export const generateBrandIdentity = async (inputs: BrandFormInputs): Promise<Br
     }
   });
 
+  // Access text directly from the response object.
   return JSON.parse(response.text);
 };
 
+/**
+ * Generates a professional brand logo mark using Gemini.
+ * Uses gemini-2.5-flash-image for general image generation tasks.
+ */
 export const generateBrandLogo = async (identity: BrandIdentity): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+  // Initialize GoogleGenAI right before making the API call as per guidelines.
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const firstLetter = identity.companyName.trim().charAt(0).toUpperCase();
   
   const logoPrompt = `Act as a senior graphic designer specializing in high-end minimalist corporate identity. 
@@ -106,6 +118,7 @@ export const generateBrandLogo = async (identity: BrandIdentity): Promise<string
     }
   });
 
+  // Find the image part in the response candidates.
   for (const part of response.candidates?.[0]?.content?.parts || []) {
     if (part.inlineData) {
       return `data:image/png;base64,${part.inlineData.data}`;

@@ -1,9 +1,23 @@
+
 import React, { useState, useEffect } from 'react';
 import { BrandForm } from './components/BrandForm';
 import { BrandDisplay } from './components/BrandDisplay';
 import { BrandState, BrandFormInputs } from './types';
 import { generateBrandIdentity, generateBrandLogo } from './services/geminiService';
-import { Sparkles, Layers, Cpu, Globe } from 'lucide-react';
+import { Sparkles, Layers, Cpu, Globe, Lock, ShieldCheck } from 'lucide-react';
+
+declare global {
+  // Using a named interface to match the expected AIStudio type from the environment.
+  interface AIStudio {
+    hasSelectedApiKey: () => Promise<boolean>;
+    openSelectKey: () => Promise<void>;
+  }
+
+  interface Window {
+    // The environment may define aistudio with specific modifiers. Using AIStudio type directly.
+    aistudio: AIStudio;
+  }
+}
 
 const TypewriterText: React.FC<{ text: string; delay?: number; className?: string }> = ({ text, delay = 0, className = "" }) => {
   const [displayedText, setDisplayedText] = useState("");
@@ -46,6 +60,40 @@ const App: React.FC = () => {
     error: null
   });
 
+  const [hasApiKey, setHasApiKey] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkKey = async () => {
+      // Small delay to ensure platform variables are injected
+      await new Promise(r => setTimeout(r, 500));
+      
+      // Check if process.env has key first
+      const envKeyExists = typeof process !== 'undefined' && process.env?.API_KEY;
+      if (envKeyExists) {
+        setHasApiKey(true);
+        return;
+      }
+
+      // Otherwise check platform helper
+      if (window.aistudio) {
+        const platformKey = await window.aistudio.hasSelectedApiKey();
+        setHasApiKey(platformKey);
+      } else {
+        // Fallback if platform helper missing (likely in development)
+        setHasApiKey(true); 
+      }
+    };
+    checkKey();
+  }, []);
+
+  const handleOpenKeySelector = async () => {
+    if (window.aistudio) {
+      await window.aistudio.openSelectKey();
+      // Assume success as per platform guidelines
+      setHasApiKey(true);
+    }
+  };
+
   const handleForgeBrand = async (inputs: BrandFormInputs) => {
     setState({ ...state, loading: true, error: null, identity: null, logoUrl: null });
     try {
@@ -56,6 +104,11 @@ const App: React.FC = () => {
       setState(prev => ({ ...prev, logoUrl, loading: false }));
     } catch (err: any) {
       console.error(err);
+      const errorMsg = err.message || '';
+      // If the request fails with "Requested entity was not found", reset the key selection state.
+      if (errorMsg.includes("Requested entity was not found")) {
+        setHasApiKey(false); // Trigger re-auth
+      }
       setState({
         ...state,
         loading: false,
@@ -68,6 +121,42 @@ const App: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setTimeout(() => setState({ identity: null, logoUrl: null, loading: false, error: null }), 300);
   };
+
+  if (hasApiKey === null) return null; // Wait for initial check
+
+  if (!hasApiKey) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0c] flex items-center justify-center p-6 text-white">
+        <div className="max-w-md w-full glass-card rounded-[48px] p-12 text-center space-y-10 border border-white/5 shadow-2xl animate-reveal-1">
+          <div className="flex justify-center">
+            <div className="p-6 bg-indigo-500/10 rounded-3xl border border-indigo-500/20">
+              <Lock className="w-12 h-12 text-indigo-500" />
+            </div>
+          </div>
+          <div className="space-y-4">
+            <h2 className="text-4xl font-black brand-serif italic uppercase tracking-tighter">Studio Access</h2>
+            <p className="text-slate-400 font-light leading-relaxed">
+              Connect your Google GenAI API key to initiate the BrandForge synthesis engine.
+            </p>
+          </div>
+          <div className="space-y-6">
+            <button 
+              onClick={handleOpenKeySelector}
+              className="w-full py-5 bg-white text-black rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-indigo-50 transition-all active:scale-[0.98]"
+            >
+              Connect Project Key
+            </button>
+            <p className="text-[10px] text-slate-500 leading-relaxed font-medium">
+              A paid GCP project key is required for synthesis.<br/>
+              <a href="https://ai.google.dev/gemini-api/docs/billing" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:underline">
+                View Billing Documentation
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen selection:bg-white selection:text-black bg-[#0a0a0c]">
@@ -108,8 +197,8 @@ const App: React.FC = () => {
                   </div>
                   
                   <h1 className="text-6xl md:text-[90px] lg:text-[100px] font-black text-white leading-[0.85] tracking-tighter uppercase brand-serif italic min-h-[1.8em]">
-                    <TypewriterText text="Identity is" delay={2100} className="block" />
-                    <TypewriterText text="Architected." delay={3000} className="text-slate-800 block" />
+                    <TypewriterText text="Identity is" delay={200} className="block" />
+                    <TypewriterText text="Architected." delay={1000} className="text-slate-800 block" />
                   </h1>
                   
                   <p className="text-xl md:text-2xl text-slate-400 font-light max-w-xl leading-relaxed animate-reveal-3">
@@ -191,7 +280,7 @@ const App: React.FC = () => {
       <footer className="mt-32 border-t border-white/5 py-12 px-8 no-print">
          <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
             <div className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.4em]">
-              &copy; 2024 BrandForge Studio / Identity Architect v3.1
+              &copy; 2024 BrandForge Studio / Identity Architect v3.2
             </div>
             <div className="flex gap-8">
                <a href="#" className="text-[10px] font-bold text-slate-500 hover:text-white uppercase tracking-widest">Privacy</a>
