@@ -2,257 +2,165 @@
 import React from 'react';
 import { BrandIdentity } from '../types';
 import { ColorPalette } from './ColorPalette';
-import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { Download, Share2, Printer, Type as TypeIcon, Palette as PaletteIcon, Target, Box, ChevronRight, Maximize2 } from 'lucide-react';
+import { Download, Smartphone, Globe, Layout, Palette, Type as TypeIcon } from 'lucide-react';
 
 export const BrandDisplay: React.FC<{ identity: BrandIdentity; logoUrl: string | null }> = ({ identity, logoUrl }) => {
-  const chartData = [
-    { x: identity.marketPositioning.valueX, y: identity.marketPositioning.valueY, name: identity.companyName }
-  ];
-
   const handleDownload = () => {
     window.print();
   };
 
+  const primaryColor = identity.colors[0]?.hex || '#6366f1';
+
   return (
-    <div className="space-y-32 animate-in fade-in slide-in-from-bottom-8 duration-1000 brand-guide-container pb-32 selection:bg-indigo-500/30">
-      {/* Title / Hero Header */}
-      <section className="relative pt-24 pb-40 border-b border-white/5 px-6">
-        <div className="max-w-5xl mx-auto text-center space-y-16">
-           <div className="inline-block no-print animate-float">
-             <div className="p-2 rounded-[2.5rem]">
+    <div className="space-y-32 animate-in fade-in slide-in-from-bottom-8 duration-700 brand-guide-container pb-32">
+      {/* 1. The Showcase Header */}
+      <section className="text-center space-y-16 pt-12">
+           <div className="flex justify-center relative">
               {logoUrl ? (
-                <img src={logoUrl} className="w-32 h-32 object-contain rounded-2xl shadow-2xl mix-blend-lighten" alt="Logo" />
+                <div className="group relative">
+                  <div className="absolute inset-0 bg-indigo-500/20 blur-[100px] rounded-full group-hover:bg-indigo-500/30 transition-all"></div>
+                  <div className="relative p-10 bg-white rounded-[48px] shadow-2xl border border-slate-200 transition-transform hover:scale-[1.02]">
+                    <img src={logoUrl} className="w-40 h-40 object-contain" alt="Logo Mark" />
+                  </div>
+                </div>
               ) : (
-                <div className="w-24 h-24 bg-slate-100 rounded-xl animate-pulse" />
+                <div className="w-40 h-40 bg-white/5 rounded-[48px] animate-pulse" />
               )}
-             </div>
            </div>
            
-           <div className="space-y-8">
-              <h1 className="text-[120px] font-black text-white tracking-tighter uppercase brand-serif italic leading-[0.8]">
+           <div className="space-y-6">
+              <h1 className="text-8xl md:text-9xl font-black text-white tracking-tighter uppercase brand-serif italic leading-none">
                 {identity.companyName}
               </h1>
-              <div className="flex items-center justify-center gap-6">
-                <div className="h-px w-12 bg-indigo-500/30"></div>
-                <p className="text-2xl text-slate-400 font-light tracking-[0.4em] uppercase">
+              <div className="flex flex-col items-center gap-4">
+                <p className="text-xl text-slate-400 font-light tracking-[0.4em] uppercase max-w-2xl mx-auto italic">
                   {identity.tagline}
                 </p>
-                <div className="h-px w-12 bg-indigo-500/30"></div>
+                <div className="h-1 w-24 bg-indigo-600 rounded-full"></div>
               </div>
            </div>
            
-           <div className="flex justify-center gap-8 pt-12 no-print">
+           <div className="no-print flex justify-center gap-4">
               <button 
                 onClick={handleDownload}
-                className="group flex items-center gap-4 px-12 py-6 bg-white text-black rounded-full font-bold uppercase tracking-[0.2em] text-[11px] hover:bg-indigo-50 transition-all shadow-2xl active:scale-[0.98]"
+                className="inline-flex items-center gap-3 px-10 py-5 bg-white text-black rounded-full font-bold uppercase tracking-widest text-xs hover:bg-indigo-50 transition-all shadow-xl shadow-white/5 active:scale-95"
               >
-                <Download size={16} /> Export Master Brand Guide
+                <Download size={16} /> Export Assets
               </button>
            </div>
-        </div>
       </section>
 
-      {/* Visual Identity Section - Deep Dive on the Mark */}
-      <section className="px-6 py-40 bg-white text-black rounded-[80px] mx-4 shadow-[0_40px_100px_rgba(0,0,0,0.2)] border border-slate-100 overflow-hidden relative">
-        <div className="max-w-7xl mx-auto space-y-32">
-          <div className="flex flex-col md:flex-row justify-between items-start gap-16">
-            <div className="space-y-8">
-              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.5em]">Section 01 / The Mark</span>
-              <h2 className="text-8xl font-black tracking-tighter brand-serif italic leading-none">The Artifact.</h2>
-              <div className="h-2 w-32 bg-black"></div>
+      {/* 2. Visual Identity Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 max-w-7xl mx-auto px-6">
+        
+        {/* Left: Strategy & Personality */}
+        <div className="lg:col-span-5 bg-[#121214] rounded-[56px] p-16 border border-white/5 flex flex-col justify-between group hover:border-white/10 transition-colors">
+          <div className="space-y-12">
+            <div className="flex items-center gap-3">
+               <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+               <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">Brand Logic</span>
             </div>
-            <div className="max-w-lg space-y-6">
-              <p className="text-xl text-slate-800 leading-relaxed font-light">
-                Our visual identity is anchored by a singular, mathematically constructed mark. It is a distillation of the brand's essence into its purest geometric form.
-              </p>
-              <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                <Maximize2 size={14} /> Edge-to-Edge Vector Definition
+            <p className="text-4xl text-white font-light brand-serif italic leading-[1.1]">"{identity.mission}"</p>
+            
+            <div className="space-y-8 pt-12 border-t border-white/5">
+              <div className="space-y-2">
+                <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Voice & Tone</h4>
+                <p className="text-slate-300 text-lg italic leading-relaxed">{identity.brandVoice}</p>
+              </div>
+              <div className="space-y-4">
+                <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Strategic Keywords</h4>
+                <div className="flex flex-wrap gap-2">
+                  {identity.keywords.map((kw, i) => (
+                    <span key={i} className="text-[10px] font-bold text-slate-300 bg-white/5 px-4 py-2 rounded-full border border-white/5">
+                      {kw}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
+        </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-            {/* Main Showcase */}
-            <div className="lg:col-span-8 bg-[#f5f5f7] rounded-[60px] aspect-video flex items-center justify-center p-20 border border-slate-100 shadow-inner group overflow-hidden">
-               {logoUrl ? (
-                 <img src={logoUrl} alt="Main Logo" className="w-full h-full object-contain mix-blend-multiply transition-transform duration-[3s] group-hover:scale-110" />
-               ) : (
-                 <div className="animate-pulse text-slate-300 uppercase tracking-[0.8em] text-xs font-bold">Synthesizing Core Mark...</div>
-               )}
-            </div>
-            
-            {/* Tech Specs */}
-            <div className="lg:col-span-4 flex flex-col gap-12">
-               <div className="bg-slate-900 rounded-[60px] p-12 flex flex-col justify-between aspect-square shadow-2xl group overflow-hidden border border-white/5">
-                  <div className="space-y-2">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500">Dark Application</p>
-                    <div className="h-px w-8 bg-white/20"></div>
+        {/* Right: Colors & Type */}
+        <div className="lg:col-span-7 bg-[#121214] rounded-[56px] p-16 border border-white/5 space-y-16 group hover:border-white/10 transition-colors">
+           <div className="space-y-10">
+              <div className="flex items-center gap-3">
+                 <Palette size={16} className="text-indigo-500" />
+                 <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">Chromatics</span>
+              </div>
+              <ColorPalette colors={identity.colors} />
+           </div>
+           
+           <div className="space-y-8 pt-12 border-t border-white/5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                   <TypeIcon size={16} className="text-indigo-500" />
+                   <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Typography</span>
+                </div>
+                <p className="text-[10px] font-bold text-white uppercase tracking-[0.5em]">{identity.typography.headingFont}</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                 <div className="space-y-4">
+                    <p className="text-5xl font-bold tracking-tighter brand-serif italic" style={{ fontFamily: identity.typography.headingFont }}>Aa Bb Cc</p>
+                    <p className="text-slate-500 text-[10px] uppercase tracking-widest font-bold">Primary Display</p>
+                 </div>
+                 <p className="text-sm text-slate-400 italic leading-relaxed">{identity.typography.reasoning}</p>
+              </div>
+           </div>
+        </div>
+      </div>
+
+      {/* 3. The "Usable" Mockups Section */}
+      <section className="max-w-7xl mx-auto px-6 space-y-12">
+        <div className="flex items-center gap-4">
+           <Layout size={18} className="text-indigo-500" />
+           <h2 className="text-2xl font-black text-white uppercase tracking-tighter brand-serif italic">Identity In Context</h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* App Icon Mockup */}
+            <div className="bg-[#121214] border border-white/5 rounded-[48px] p-12 flex flex-col items-center justify-center space-y-8 h-[400px]">
+               <div className="relative">
+                  <div className="w-28 h-28 rounded-[28px] overflow-hidden shadow-2xl transition-transform hover:scale-110 duration-500" style={{ backgroundColor: primaryColor }}>
+                     {logoUrl && <img src={logoUrl} className="w-full h-full object-contain p-6 invert brightness-200" alt="App Icon" />}
                   </div>
-                  <div className="flex justify-center items-center py-4">
-                    {logoUrl && <img src={logoUrl} className="w-full h-full object-contain invert grayscale transition-all duration-1000 group-hover:scale-110 mix-blend-screen" alt="Logo Inverse" />}
-                  </div>
-                  <div className="flex justify-between items-end">
-                    <div className="h-8 w-8 rounded-full border border-white/10"></div>
-                    <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">v1.0.24</span>
-                  </div>
+                  <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Mobile Icon</div>
                </div>
-               
-               <div className="bg-indigo-50 rounded-[60px] p-16 flex flex-col justify-center space-y-6 border border-indigo-100">
-                  <h4 className="text-xs font-bold uppercase tracking-[0.3em] text-indigo-900/50">Geometric Fidelity</h4>
-                  <p className="text-sm text-indigo-900/70 font-light italic leading-relaxed">
-                    The mark's construction leverages clear mathematical proportions, ensuring it retains impact across micro-displays and large-format installations.
+               <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full">
+                  <Smartphone size={12} className="text-slate-500" />
+                  <span className="text-[10px] font-bold text-slate-400">iOS Standard</span>
+               </div>
+            </div>
+
+            {/* Dark Mode Branding */}
+            <div className="bg-slate-900 border border-white/5 rounded-[48px] p-12 flex flex-col items-center justify-center space-y-8 h-[400px] overflow-hidden group">
+               <div className="w-full h-full flex flex-col items-center justify-center space-y-6">
+                 {logoUrl && <img src={logoUrl} className="w-24 h-24 object-contain invert grayscale brightness-200 opacity-80 group-hover:opacity-100 transition-opacity" alt="Dark Mode" />}
+                 <div className="text-center">
+                    <p className="text-white text-3xl font-bold tracking-tighter brand-serif italic">{identity.companyName}</p>
+                    <p className="text-slate-500 text-[9px] uppercase tracking-[0.3em] font-bold mt-2">Dark Utility Mark</p>
+                 </div>
+               </div>
+            </div>
+
+            {/* Social/Profile Mockup */}
+            <div className="bg-white border border-slate-200 rounded-[48px] p-12 flex flex-col items-center justify-center space-y-8 h-[400px] group">
+               <div className="relative">
+                 <div className="w-32 h-32 rounded-full border-4 border-slate-50 overflow-hidden shadow-xl transition-all group-hover:rotate-12">
+                   {logoUrl && <img src={logoUrl} className="w-full h-full object-contain p-4" alt="Profile" />}
+                 </div>
+                 <div className="absolute -top-4 -right-4 w-10 h-10 bg-blue-500 rounded-full border-4 border-white flex items-center justify-center">
+                    <div className="w-2 h-2 bg-white rounded-full"></div>
+                 </div>
+               </div>
+               <div className="text-center space-y-2">
+                  <p className="text-slate-900 text-2xl font-black tracking-tight">{identity.companyName}</p>
+                  <p className="text-slate-400 text-[10px] uppercase tracking-widest font-bold flex items-center justify-center gap-2">
+                    <Globe size={12} /> Verified Venture
                   </p>
                </div>
             </div>
-          </div>
         </div>
-      </section>
-
-      {/* Vision & Mission - Editorial Style */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-24 items-start px-6 max-w-7xl mx-auto">
-        <div className="lg:col-span-5 space-y-8">
-           <span className="text-[11px] font-bold text-indigo-500 uppercase tracking-[0.5em]">Section 02 / Strategic Core</span>
-           <h2 className="text-7xl font-bold text-white leading-tight brand-serif italic">The Visionary <br/> Narrative.</h2>
-           <div className="p-12 bg-white/5 rounded-[48px] border border-white/5 backdrop-blur-3xl space-y-8">
-              <div className="flex items-center gap-4">
-                 <div className="h-3 w-3 rounded-full bg-indigo-500"></div>
-                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em]">Target Audience Profile</p>
-              </div>
-              <p className="text-2xl text-slate-200 leading-relaxed font-light">{identity.targetAudience}</p>
-           </div>
-        </div>
-        <div className="lg:col-span-7 space-y-20 pt-12">
-           <div className="relative">
-             <p className="text-6xl text-slate-100 leading-[1.1] font-light brand-serif">
-               “{identity.mission}”
-             </p>
-           </div>
-           
-           <div className="grid grid-cols-1 md:grid-cols-2 gap-16 border-t border-white/10 pt-16">
-             <div className="space-y-6">
-               <h4 className="flex items-center gap-3 text-[11px] font-bold text-slate-500 uppercase tracking-[0.4em]">
-                 <Box size={16} className="text-indigo-400" /> Tonal Signature
-               </h4>
-               <p className="text-slate-400 text-xl leading-relaxed font-light italic">{identity.brandVoice}</p>
-             </div>
-             <div className="flex flex-wrap gap-4 items-start">
-                {identity.keywords.map((kw, i) => (
-                  <div key={i} className="text-[10px] font-bold text-slate-300 border border-white/10 px-6 py-4 rounded-full uppercase tracking-[0.3em] hover:bg-white/5 transition-all">
-                    {kw}
-                  </div>
-                ))}
-             </div>
-           </div>
-        </div>
-      </section>
-
-      {/* Chromatic System & Type */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-32 px-6 max-w-7xl mx-auto">
-        <div className="space-y-20">
-           <div className="space-y-8">
-              <span className="text-[11px] font-bold text-indigo-500 uppercase tracking-[0.5em]">Section 03 / Visual Vocabulary</span>
-              <h2 className="text-7xl font-bold text-white brand-serif italic leading-none">Chromatic Logic.</h2>
-              <p className="text-slate-500 text-lg font-light leading-relaxed max-w-md">Our colors aren't just decorative; they are communicative. Each hue has been selected to evoke specific psychological responses.</p>
-           </div>
-           <ColorPalette colors={identity.colors} />
-        </div>
-
-        <div className="space-y-16 bg-[#0e0e11] p-20 rounded-[64px] border border-white/5 shadow-3xl">
-           <div className="space-y-12">
-              <div className="space-y-8">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-white/5 rounded-2xl border border-white/10">
-                    <TypeIcon size={20} className="text-indigo-400" />
-                  </div>
-                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Typeface: {identity.typography.headingFont}</p>
-                </div>
-                <h3 className="text-8xl font-bold text-white leading-[0.8] tracking-tighter brand-serif italic">
-                  Visual <br/> Dialect.
-                </h3>
-              </div>
-              <div className="h-px bg-white/5 w-full"></div>
-              <div className="space-y-8">
-                <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Body Copy: {identity.typography.bodyFont}</p>
-                <p className="text-2xl text-slate-300 leading-relaxed font-light italic opacity-90">
-                  "Good design is obvious. Great design is transparent." Our typographic framework balances brutalist headlines with absolute clarity in reading.
-                </p>
-              </div>
-              <div className="p-8 bg-white/[0.02] rounded-3xl border border-white/5">
-                <p className="text-xs text-slate-500 italic leading-relaxed">
-                  {identity.typography.reasoning}
-                </p>
-              </div>
-           </div>
-        </div>
-      </section>
-
-      {/* Final Application - Editorial Grid */}
-      <section className="max-w-7xl mx-auto px-6 space-y-24 pt-20">
-         <div className="flex flex-col items-center text-center space-y-8">
-           <span className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.6em]">Section 04 / In-Situ</span>
-           <h2 className="text-8xl font-black text-white brand-serif italic leading-none">Contextualized Identity.</h2>
-         </div>
-         
-         <div className="grid grid-cols-1 md:grid-cols-2 gap-20">
-            {/* Business Card Style */}
-            <div className="group relative aspect-[1.4/1] bg-[#121214] border border-white/5 rounded-[70px] p-20 flex flex-col justify-between overflow-hidden transition-all hover:bg-[#161618] hover:border-indigo-500/30 shadow-3xl">
-               <div className="flex justify-between items-start relative z-10">
-                  <div className="transition-transform duration-1000 group-hover:rotate-[360deg]">
-                    {logoUrl && <img src={logoUrl} className="h-24 w-24 object-contain invert grayscale mix-blend-screen" alt="Logo" />}
-                  </div>
-                  <div className="text-right space-y-1">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-slate-600">Confidential</p>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-indigo-500/40">v1.2024</p>
-                  </div>
-               </div>
-               <div className="space-y-6 relative z-10">
-                  <h3 className="text-6xl font-bold text-white tracking-tighter brand-serif italic">{identity.companyName}</h3>
-                  <div className="h-px w-20 bg-indigo-500"></div>
-                  <div className="pt-4 flex justify-between items-end">
-                    <div className="space-y-1">
-                      <p className="text-[10px] text-slate-400 uppercase tracking-[0.3em] font-black">Principal Office</p>
-                      <p className="text-xs text-slate-600 font-light italic">hq@{identity.companyName.toLowerCase().replace(/\s/g, '')}.com</p>
-                    </div>
-                    <Share2 size={16} className="text-slate-800" />
-                  </div>
-               </div>
-               <div className="absolute -bottom-24 -right-24 w-80 h-80 bg-indigo-600/5 blur-[100px] rounded-full"></div>
-            </div>
-
-            {/* Digital Frame */}
-            <div className="group aspect-[1.4/1] bg-white rounded-[70px] overflow-hidden flex flex-col shadow-3xl transition-all duration-1000 hover:-translate-y-4 border border-slate-100">
-               <nav className="p-10 bg-slate-50/30 backdrop-blur-xl border-b border-slate-100 flex justify-between items-center">
-                  <div className="flex items-center gap-6">
-                     <div className="transition-all">
-                       {logoUrl && <img src={logoUrl} className="h-10 w-10 object-contain mix-blend-multiply" alt="Logo Small" />}
-                     </div>
-                     <span className="text-[11px] font-black uppercase text-slate-900 tracking-[0.4em]">{identity.companyName}</span>
-                  </div>
-                  <div className="flex gap-8">
-                     <div className="h-1.5 w-12 bg-slate-200 rounded-full"></div>
-                     <div className="h-1.5 w-12 bg-slate-200 rounded-full"></div>
-                  </div>
-               </nav>
-               <div className="flex-1 p-20 space-y-10 flex flex-col justify-center text-slate-900 relative">
-                  <span className="text-[11px] font-black uppercase tracking-[0.5em] text-indigo-600">The New Standard</span>
-                  <h4 className="text-7xl font-black tracking-tighter leading-[0.85] brand-serif italic">Architecture <br/> for the modern era.</h4>
-                  <div className="flex gap-8 pt-6">
-                    <div className="h-16 px-10 rounded-full flex items-center justify-center text-white text-[11px] font-black uppercase tracking-[0.3em] shadow-2xl hover:scale-105 transition-transform" style={{ backgroundColor: identity.colors[0]?.hex }}>
-                      Initialize Session
-                    </div>
-                    <div className="h-16 w-16 rounded-full border-2 border-slate-100 flex items-center justify-center text-slate-300 group-hover:text-indigo-500 group-hover:border-indigo-100 transition-all">
-                      <ChevronRight size={24} />
-                    </div>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </section>
-      
-      {/* Editorial Footer Decoration */}
-      <section className="text-center pt-40 opacity-20 no-print pb-20">
-        <p className="text-[11px] font-black uppercase tracking-[1.5em] text-slate-600">Brand Identity Synthesis Finalized</p>
       </section>
     </div>
   );

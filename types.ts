@@ -37,8 +37,9 @@ export interface BrandFormInputs {
 }
 
 export interface BrandState {
-  identity: BrandIdentity | null;
-  logoUrl: string | null;
+  identities: BrandIdentity[] | null;
+  selectedIndex: number;
+  logoUrls: (string | null)[];
   loading: boolean;
   error: string | null;
 }

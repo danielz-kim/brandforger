@@ -2,30 +2,29 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { BrandIdentity, BrandFormInputs } from "../types";
 
-// Removed redundant getSafeApiKey helper. Guidelines state process.env.API_KEY is available and should be used directly.
-
 /**
- * Generates a comprehensive brand identity using Gemini.
- * Uses gemini-3-pro-preview for complex reasoning and strategic output.
+ * Generates 3 distinct brand identities in one pass.
+ * Uses gemini-3-pro-preview for strategic depth.
  */
-export const generateBrandIdentity = async (inputs: BrandFormInputs): Promise<BrandIdentity> => {
-  // Initialize GoogleGenAI right before making the API call as per guidelines.
+export const generateBrandIdentities = async (inputs: BrandFormInputs): Promise<BrandIdentity[]> => {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-  const prompt = `Act as a world-class brand strategist and creative director from a top-tier design agency (like Pentagram, Sagmeister & Walsh, or Wolff Olins).
-  Create a comprehensive, professional brand identity for:
-  Name: ${inputs.name || 'A new innovative project'}
-  Industry/Sector: ${inputs.sector}
-  Mission/Description: ${inputs.description}
-  Aesthetic Style: ${inputs.style}
-  Core Audience: ${inputs.audience}
-
-  Provide a sophisticated brand strategy. Mission should be visionary. Tagline should be provocative and memorable.
-  Color palette should be avant-garde but professional (4+ colors).
-  Typography reasoning must be design-focused.
-  Market positioning should place them relative to competitors.
+  const prompt = `Act as an elite brand incubator for high-speed startups. 
+  The mission is: "Get quick branding so builders can focus on the work that matters."
   
-  Format the output as a high-end brand guide JSON.`;
+  Create THREE (3) distinct and comprehensive branding concepts for:
+  Name: ${inputs.name || 'An innovative venture'}
+  Sector: ${inputs.sector}
+  Description: ${inputs.description}
+  Style Preference: ${inputs.style}
+  Audience: ${inputs.audience}
+
+  Each of the 3 concepts should have a unique personality:
+  1. The "Efficient Minimalist" (Clean, high-performance, utilitarian)
+  2. The "Bold Disruptor" (Vibrant, loud, unconventional)
+  3. The "Trusted Standard" (Established, professional, secure)
+
+  Format the output as a JSON array of 3 brand identity objects.`;
 
   const response = await ai.models.generateContent({
     model: 'gemini-3-pro-preview',
@@ -33,78 +32,79 @@ export const generateBrandIdentity = async (inputs: BrandFormInputs): Promise<Br
     config: {
       responseMimeType: 'application/json',
       responseSchema: {
-        type: Type.OBJECT,
-        properties: {
-          companyName: { type: Type.STRING },
-          tagline: { type: Type.STRING },
-          mission: { type: Type.STRING },
-          brandVoice: { type: Type.STRING },
-          targetAudience: { type: Type.STRING },
-          keywords: { type: Type.ARRAY, items: { type: Type.STRING } },
-          colors: {
-            type: Type.ARRAY,
-            items: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            companyName: { type: Type.STRING },
+            tagline: { type: Type.STRING },
+            mission: { type: Type.STRING },
+            brandVoice: { type: Type.STRING },
+            targetAudience: { type: Type.STRING },
+            keywords: { type: Type.ARRAY, items: { type: Type.STRING } },
+            colors: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  hex: { type: Type.STRING },
+                  name: { type: Type.STRING },
+                  usage: { type: Type.STRING }
+                },
+                required: ['hex', 'name', 'usage']
+              }
+            },
+            typography: {
               type: Type.OBJECT,
               properties: {
-                hex: { type: Type.STRING },
-                name: { type: Type.STRING },
-                usage: { type: Type.STRING }
+                headingFont: { type: Type.STRING },
+                bodyFont: { type: Type.STRING },
+                reasoning: { type: Type.STRING }
               },
-              required: ['hex', 'name', 'usage']
+              required: ['headingFont', 'bodyFont', 'reasoning']
+            },
+            marketPositioning: {
+              type: Type.OBJECT,
+              properties: {
+                axisX: { type: Type.STRING },
+                axisY: { type: Type.STRING },
+                valueX: { type: Type.NUMBER },
+                valueY: { type: Type.NUMBER }
+              },
+              required: ['axisX', 'axisY', 'valueX', 'valueY']
             }
           },
-          typography: {
-            type: Type.OBJECT,
-            properties: {
-              headingFont: { type: Type.STRING },
-              bodyFont: { type: Type.STRING },
-              reasoning: { type: Type.STRING }
-            },
-            required: ['headingFont', 'bodyFont', 'reasoning']
-          },
-          marketPositioning: {
-            type: Type.OBJECT,
-            properties: {
-              axisX: { type: Type.STRING },
-              axisY: { type: Type.STRING },
-              valueX: { type: Type.NUMBER },
-              valueY: { type: Type.NUMBER }
-            },
-            required: ['axisX', 'axisY', 'valueX', 'valueY']
-          }
-        },
-        required: ['companyName', 'tagline', 'mission', 'brandVoice', 'targetAudience', 'keywords', 'colors', 'typography', 'marketPositioning']
+          required: ['companyName', 'tagline', 'mission', 'brandVoice', 'targetAudience', 'keywords', 'colors', 'typography', 'marketPositioning']
+        }
       }
     }
   });
 
-  // Access text directly from the response object.
-  return JSON.parse(response.text);
+  return JSON.parse(response.text || '[]');
 };
 
 /**
- * Generates a professional brand logo mark using Gemini.
- * Uses gemini-2.5-flash-image for general image generation tasks.
+ * Generates a usable, minimalist professional logo.
  */
 export const generateBrandLogo = async (identity: BrandIdentity): Promise<string> => {
-  // Initialize GoogleGenAI right before making the API call as per guidelines.
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const firstLetter = identity.companyName.trim().charAt(0).toUpperCase();
   
-  const logoPrompt = `Act as a senior graphic designer specializing in high-end minimalist corporate identity. 
-  Create a singular, professional logo mark for "${identity.companyName}".
+  // Refined prompt for "actual usable logos"
+  const logoPrompt = `Act as a senior graphic designer specializing in minimalist logo marks for tech and modern ventures.
   
-  CORE CONCEPT: A sophisticated geometric LETTERMARK based on the capital letter "${firstLetter}".
+  OBJECTIVE: Create a singular, professional, geometric logo mark for "${identity.companyName}".
   
-  VISUAL EXECUTION:
-  - The mark must FILL THE CANVAS, leaving only a small margin for safety. 
-  - DO NOT generate a frame, border, or box around the logo. Just the logo mark itself.
-  - STYLE: Ultra-minimalist, flat vector design. Geometric precision. 
-  - NO TEXT: Zero alphanumeric characters besides the stylized logo mark itself.
-  - NO GRADIENTS: Use solid primary brand color ${identity.colors[0].hex}.
-  - BACKGROUND: Pure, solid white (#FFFFFF). No textures, no shadows, no noise.
+  VISUAL STYLE:
+  - MINIMALIST VECTOR: Think of the simplicity of Airbnb, Uber, or Discord.
+  - GEOMETRY: Use bold, clean geometric shapes to create a unique symbol.
+  - LETTERMARK OR ICON: Focus on the letter "${firstLetter}" OR a clever abstraction of "${identity.keywords[0]}".
+  - COLORS: Use ONLY the brand's primary color: ${identity.colors[0].hex}.
+  - FLAT DESIGN: No gradients, no shadows, no 3D effects, no textures.
+  - PURE BACKGROUND: The logo must be on a SOLID PURE WHITE (#FFFFFF) background.
+  - NO TEXT: Absolutely no letters or words within the image, just the logo icon itself.
   
-  The result should be a clean, bold icon that looks like it belongs to a Fortune 500 company.`;
+  The result should be a high-contrast mark that is recognizable at any size.`;
 
   const response = await ai.models.generateContent({
     model: 'gemini-2.5-flash-image',
@@ -118,12 +118,13 @@ export const generateBrandLogo = async (identity: BrandIdentity): Promise<string
     }
   });
 
-  // Find the image part in the response candidates.
-  for (const part of response.candidates?.[0]?.content?.parts || []) {
-    if (part.inlineData) {
-      return `data:image/png;base64,${part.inlineData.data}`;
+  if (response.candidates?.[0]?.content?.parts) {
+    for (const part of response.candidates[0].content.parts) {
+      if (part.inlineData) {
+        return `data:image/png;base64,${part.inlineData.data}`;
+      }
     }
   }
   
-  throw new Error("Failed to generate logo image");
+  throw new Error("Logo generation failed");
 };
